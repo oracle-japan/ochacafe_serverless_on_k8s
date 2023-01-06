@@ -1,0 +1,22 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: simple-serving-ocha-demo
+  namespace: serving-demo
+spec:
+  template:
+    metadata:
+      name: simple-serving-ocha-demo-v3
+    spec:
+      containers:
+      - image: nrt.ocir.io/orasejapan/ocha-demo-sonk8s-serving:v3
+        ports:
+        - containerPort: 8080
+  traffic:
+  - revisionName: simple-serving-ocha-demo-v1
+    percent: 30
+  - revisionName: simple-serving-ocha-demo-v2
+    percent: 40
+  - revisionName: simple-serving-ocha-demo-v3
+    percent: 30
+

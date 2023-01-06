@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: kafka-scaledobject
+  namespace: keda-demo
+spec:
+  scaleTargetRef:
+    name: keda-demo-deploy
+  pollingInterval: 5
+  minReplicaCount: 0
+  maxReplicaCount:  10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: cell-1.streaming.ap-tokyo-1.oci.oraclecloud.com:9092
+      consumerGroup: keda-demo001
+      topic: KEDA-Demo
+      offsetResetPolicy: latest
+    authenticationRef:
+      name: keda-trigger-auth-kafka-credential

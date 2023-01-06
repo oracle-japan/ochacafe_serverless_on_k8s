@@ -1,0 +1,15 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: simple-eventing-ocha-demo
+  namespace: eventing-demo
+spec:
+  template:
+    metadata:
+      name: simple-eventing-ocha-demo-v1
+    spec:
+      containers:
+      - image: nrt.ocir.io/orasejapan/ocha-demo-sonk8s-eventing:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080

@@ -1,0 +1,32 @@
+apiVersion: sources.knative.dev/v1beta1
+kind: KafkaSource
+metadata:
+ name: kafka-source-ocha-demo
+ namespace: eventing-demo
+spec:
+ net:
+  sasl:
+    enable: true
+    user:
+      secretKeyRef:
+        name: streaming-source-secret
+        key: user
+    password:
+      secretKeyRef:
+        name: streaming-source-secret
+        key: password
+    type:
+      secretKeyRef:
+        name: streaming-source-secret
+        key: saslType
+  tls:
+    enable: true
+ bootstrapServers:
+ - cell-1.streaming.ap-tokyo-1.oci.oraclecloud.com:9092
+ topics:
+ - EventingDemo
+ sink:
+   ref:
+     apiVersion: serving.knative.dev/v1
+     kind: Service
+     name: simple-eventing-ocha-demo

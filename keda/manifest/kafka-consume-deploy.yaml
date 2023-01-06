@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keda-demo-deploy
+  namespace: keda-demo
+  labels:
+    app: keda-demo-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keda-demo-deploy
+  template:
+    metadata:
+      labels:
+        app: keda-demo-deploy
+    spec:
+      containers:
+      - name: keda-demo-deploy
+        image: nrt.ocir.io/orasejapan/ocha-demo-sonk8s-keda
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
