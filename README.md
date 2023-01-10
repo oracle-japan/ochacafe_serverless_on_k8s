@@ -457,8 +457,8 @@ mp.messaging:
 
 key|value
 ---|---
-mp.messaging.connector.helidon-kafka.bootstrap.servers|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したブートストラップ・サーバー
-mp.messaging.connector.helidon-kafka.sasl.jaas.config|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したSASL接続文字列
+<ブートストラップサーバー>|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したブートストラップ・サーバー
+<SASL_CONFIG>|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したSASL接続文字列
 
 サンプルアプリケーションのコンテナイメージをビルドします。  
 ローカルにDockerエンジンが必要です。  
