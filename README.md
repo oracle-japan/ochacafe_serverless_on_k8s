@@ -514,6 +514,37 @@ key|value
 ---|---
 image|前手順でビルドしたコンテナイメージ名(東京リージョンの場合は`nrt.ocir.io/<オブジェクトストレージネームスペース>/keda-demo-app`)
 
+`keda-kafka-scaledobj`を編集します。vimでもエディタでも構いません。  
+
+```yaml
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: kafka-scaledobject
+  namespace: keda-demo
+spec:
+  scaleTargetRef:
+    name: keda-demo-deploy
+  pollingInterval: 5
+  minReplicaCount: 0
+  maxReplicaCount:  10
+  triggers:
+  - type: kafka
+    metadata:
+      bootstrapServers: <ブートストラップサーバー>
+      consumerGroup: keda-demo001
+      topic: KEDA-Demo
+      offsetResetPolicy: latest
+    authenticationRef:
+      name: keda-trigger-auth-kafka-credential
+```
+
+以下のパラメータを設定し、保存します。
+
+key|value
+---|---
+bootstrapServers|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したブートストラップ・サーバー
+
 デモ用のNamespaceを作成します。  
 
 ```sh

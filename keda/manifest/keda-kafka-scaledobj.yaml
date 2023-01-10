@@ -12,7 +12,7 @@ spec:
   triggers:
   - type: kafka
     metadata:
-      bootstrapServers: cell-1.streaming.ap-tokyo-1.oci.oraclecloud.com:9092
+      bootstrapServers: <ブートストラップサーバー>
       consumerGroup: keda-demo001
       topic: KEDA-Demo
       offsetResetPolicy: latest
