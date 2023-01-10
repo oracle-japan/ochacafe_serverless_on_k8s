@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: keda-demo-deploy
-        image: nrt.ocir.io/orasejapan/ocha-demo-sonk8s-keda
+        image: <コンテナイメージパス>
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

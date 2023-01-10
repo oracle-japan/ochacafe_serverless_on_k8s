@@ -1,9 +1,10 @@
 # ochacafe_serverless_on_k8s
+
 ---
 
 [OCHaCafe Season6 #5 サーバレス on Kubernetes](https://ochacafe.connpass.com/event/266727/)のデモ資材
 
---- 
+---
 
 ## 環境構築
 
@@ -100,7 +101,17 @@ OCIコンソールの人型マークをクリックし、ユーザ名をクリ�
 
 ![013.png](img/013.png)
 
-出力された認証トークンをメモ帳などに保存しておいてください。
+出力された認証トークンをメモ帳などに保存しておいてください。  
+
+#### 3-5. オブジェクトストレージネームスペースの確認  
+
+OCIコンソールの人型マークをクリックし、テナンシをクリックします。  
+
+![019.png](img/019.png)
+
+`テナンシ詳細`にある`オブジェクト・ストレージ・ネームスペース`の値をメモ帳などに記録しておきます。  
+
+![020.png](img/020.png)
 
 これで、環境構築は完了です。  
 
@@ -111,7 +122,7 @@ OCIコンソールの人型マークをクリックし、ユーザ名をクリ�
 ディレクトリを移動します。  
 
 ```sh
-cd knative/serving/autoscale
+cd ochacafe_serverless_on_k8s/knative/serving/autoscale
 ```
 
 デモ用のNamespaceを作成します。  
@@ -232,7 +243,7 @@ cd ~
 ディレクトリを移動します。  
 
 ```sh
-cd knative/serving/traffic
+cd ochacafe_serverless_on_k8s/knative/serving/traffic
 ```
 
 Manifestを順次適用します。  
@@ -280,7 +291,7 @@ cd ~
 ディレクトリを移動します。  
 
 ```sh
-cd knative/eventing
+cd ochacafe_serverless_on_k8s/knative/eventing
 ```
 
 まずは、デモで利用するNamespaceを作成します。  
@@ -366,7 +377,6 @@ OCIコンソールを開き、[3-3.Streamingのプロビジョニング](#3-3-st
 
 ![016.png](img/016.png)
 
-
 Podが以下のように起動します。  
 
 ```sh
@@ -412,11 +422,97 @@ cd ~
 
 ## 5. KEDAのデモ
 
-ディレクトリを移動します。  
+サンプルアプリケーションの設定を更新します。  
 
 ```sh
-cd keda/manifest
+cd ochacafe_serverless_on_k8s/keda/sampleapp
 ```
+
+`src/main/resources/application.yaml`を編集します。vimでもエディタでも構いません。  
+
+```yaml
+mp.messaging:
+  incoming.keda-demo:
+    connector: helidon-kafka
+    topic: KEDA-Demo
+    auto.offset.reset: latest
+    enable.auto.commit: true
+    group.id: keda-demo001
+
+  connector:
+    helidon-kafka:
+      bootstrap.servers: <ブートストラップサーバー>
+      sasl.mechanism: PLAIN
+      security.protocol: SASL_SSL
+      sasl.jaas.config: >-
+        <SASL_CONFIG>
+      key.serializer: org.apache.kafka.common.serialization.StringSerializer
+      value.serializer: org.apache.kafka.common.serialization.StringSerializer
+      key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+```
+
+パラメータは以下のように設定し、保存します。  
+
+key|value
+---|---
+mp.messaging.connector.helidon-kafka.bootstrap.servers|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したブートストラップ・サーバー
+mp.messaging.connector.helidon-kafka.sasl.jaas.config|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したSASL接続文字列
+
+サンプルアプリケーションのコンテナイメージをビルドします。  
+ローカルにDockerエンジンが必要です。  
+ここでは東京リージョンのOCIRにPushします。  
+他のリージョンを利用する方は、[こちら](https://docs.oracle.com/ja-jp/iaas/Content/General/Concepts/regions.htm)から`リージョン・キー`をご確認ください。  
+`<オブジェクト・ストレージ・ネームスペース>`には[3-5.オブジェクトストレージネームスペースの確認](#3-5-オブジェクトストレージネームスペースの確認)で確認した値を付与します。  
+
+```sh
+docker build -t nrt.ocir.io/<オブジェクト・ストレージ・ネームスペース>/keda-demo-app .
+```
+
+```sh
+docker push nrt.ocir.io/<オブジェクト・ストレージ・ネームスペース>/keda-demo-app 
+```
+
+Manifestの設定を変更します。  
+
+```sh
+cd ochacafe_serverless_on_k8s/keda/manifest
+```
+
+`keda-consume-deploy`を編集します。vimでもエディタでも構いません。  
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keda-demo-deploy
+  namespace: keda-demo
+  labels:
+    app: keda-demo-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keda-demo-deploy
+  template:
+    metadata:
+      labels:
+        app: keda-demo-deploy
+    spec:
+      containers:
+      - name: keda-demo-deploy
+        image: <コンテナイメージパス>
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+```
+
+以下のパラメータを設定し、保存します。
+
+key|value
+---|---
+image|前手順でビルドしたコンテナイメージ名(東京リージョンの場合は`nrt.ocir.io/<オブジェクトストレージネームスペース>/keda-demo-app`)
 
 デモ用のNamespaceを作成します。  
 

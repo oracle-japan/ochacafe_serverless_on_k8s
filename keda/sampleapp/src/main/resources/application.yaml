@@ -1,5 +1,4 @@
 mp.messaging:
-
   incoming.keda-demo:
     connector: helidon-kafka
     topic: KEDA-Demo
@@ -9,14 +8,11 @@ mp.messaging:
 
   connector:
     helidon-kafka:
-      bootstrap.servers: cell-1.streaming.ap-tokyo-1.oci.oraclecloud.com:9092
+      bootstrap.servers: <ブートストラップサーバー>
       sasl.mechanism: PLAIN
       security.protocol: SASL_SSL
-      sasl.jaas.config:  >-
-        org.apache.kafka.common.security.plain.PlainLoginModule
-        required
-        username="orasejapan/oracleidentitycloudservice/takuya.niita@oracle.com/ocid1.streampool.oc1.ap-tokyo-1.amaaaaaassl65iqaxepnzgyyk2cyvtzshorpqtxbnrozpaquymca2ggq5qta"
-        password="FHL{PMYDogCWo76My)x#";
+      sasl.jaas.config: >-
+        <SASL_CONFIG>
       key.serializer: org.apache.kafka.common.serialization.StringSerializer
       value.serializer: org.apache.kafka.common.serialization.StringSerializer
       key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
