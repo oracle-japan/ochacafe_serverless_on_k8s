@@ -457,8 +457,8 @@ mp.messaging:
 
 key|value
 ---|---
-<ブートストラップサーバー>|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したブートストラップ・サーバー
-<SASL_CONFIG>|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したSASL接続文字列
+`mp.messaging.connector.helidon-kafka.bootstrap.servers`|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したブートストラップ・サーバー
+`mp.messaging.connector.helidon-kafka.sasl.jaas.config`|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したSASL接続文字列
 
 サンプルアプリケーションのコンテナイメージをビルドします。  
 ローカルにDockerエンジンが必要です。  
@@ -539,7 +539,7 @@ data:
 
 key|value
 ---|---
-user|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したユーザ名をBase64エンコードした値
+username|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したユーザ名をBase64エンコードした値
 password|[3-4-認証トークンの作成](#3-4-認証トークンの作成)で生成した認証トークンをBase64エンコードした値
 
 例えば、以下のようになります。  
