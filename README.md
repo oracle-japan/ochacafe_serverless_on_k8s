@@ -14,17 +14,9 @@
 .
 ├── README.md
 ├── keda => KEDAのデモ資材
-│   ├── manifest　=> 環境構築用のManifest
-│   └── sampleapp => デモで利用するサンプルアプリケーション
 └── knative => Knativeのデモ資材
     ├── eventing => Eventingのデモを実施するための資材
-    │   ├── eventing-src => Eventingのイベントソースを設定するManifest
-    │   ├── eventing-svc => Eventingのワークロードを設定するManifest
-    │   └── sampleapp　=> デモで利用するサンプルアプリケーション
     └── serving　=> Servingのデモを実施するための資材
-        ├── autoscale => Servingのオートスケールを実施するための資材
-        ├── sampleapp　=> デモで利用するサンプルアプリケーション
-        └── traffic　=> Servingのトラフィックマネジメントを実施するためのManifest
 ```
 
 ### 2. OKEの構築
@@ -303,7 +295,7 @@ kubectl create ns eventing-demo
 Eventingで起動するワークロード(今回はKnative Servingを使います)を構築します。  
 
 ```sh
-kubectl apply -f eventing-svc/kafka-serving.yaml
+kubectl apply -f kafka-serving.yaml
 ```
 
 次に、イベントソースで利用するSecretを作成します。  
@@ -326,7 +318,7 @@ password|[3-4-認証トークンの作成](#3-4-認証トークンの作成)で�
 ※東京リージョン以外で実施する場合、このManifestに記載されているブートストラップサーバを変更してください
 
 ```sh
-kubectl apply -f eventing-src/kafkasource.yaml
+kubectl apply -f kafkasource.yaml
 ```
 
 Knative Serviveを確認します。  
@@ -514,37 +506,6 @@ key|value
 ---|---
 image|前手順でビルドしたコンテナイメージ名(東京リージョンの場合は`nrt.ocir.io/<オブジェクトストレージネームスペース>/keda-demo-app`)
 
-`keda-kafka-scaledobj`を編集します。vimでもエディタでも構いません。  
-
-```yaml
-apiVersion: keda.sh/v1alpha1
-kind: ScaledObject
-metadata:
-  name: kafka-scaledobject
-  namespace: keda-demo
-spec:
-  scaleTargetRef:
-    name: keda-demo-deploy
-  pollingInterval: 5
-  minReplicaCount: 0
-  maxReplicaCount:  10
-  triggers:
-  - type: kafka
-    metadata:
-      bootstrapServers: <ブートストラップサーバー>
-      consumerGroup: keda-demo001
-      topic: KEDA-Demo
-      offsetResetPolicy: latest
-    authenticationRef:
-      name: keda-trigger-auth-kafka-credential
-```
-
-以下のパラメータを設定し、保存します。
-
-key|value
----|---
-bootstrapServers|[3-3.Streamingのプロビジョニング](#3-3-streamingのプロビジョニング)で記録したブートストラップ・サーバー
-
 デモ用のNamespaceを作成します。  
 
 ```sh
@@ -601,6 +562,7 @@ kubectl apply -f kafka-consume-deploy.yaml
 ```
 
 最後にScaledObjectを適用します。  
+※東京リージョン以外を利用する場合は、Manifest内の`bootstrapServers`を変更してください。  
 
 ```sh
 kubectl apply -f keda-kafka-scaledobj.yaml
